@@ -43,7 +43,17 @@ class SqliteRepository(AbstractRepository[T]):
         pass
 
     def update(self, obj: T) -> None:
-        pass
+        with sl.connect(self.db_file) as con:
+            cur = con.cursor()
+            fields = ', '.join(f"{x}=?" for x in self.fields.keys())
+            values = [getattr(obj, x) for x in self.fields]
+            cur.execute(f"UPDATE {self.table_name} SET {fields} WHERE ROWID == {obj.pk}",
+                        values)
+        con.close()
 
     def delete(self, pk: int) -> None:
-        pass
+        with sl.connect(self.db_file) as con:
+            cur = con.cursor()
+            cur.execute(f"DELETE FROM {self.table_name} WHERE ROWID = {pk}")
+            rowcount = cur.rowcount
+        con.close()
