@@ -26,13 +26,13 @@ class SqliteRepository(AbstractRepository[T]):
         p = ', '.join("?" * len(self.fields))
         values = [getattr(obj, x) for x in self.fields]
         with sl.connect(self.db_file) as con:
-          cur = con.cursor()
-          cur.execute('PRAGMA foreign_keys = ON’)
-          cur.execute(
-            f'INSERT INTO {self.table_name} ({names}) VALUES({p})',
-                      values
-          )
-          obj.pk = cur.lastrowid
+            cur = con.cursor()
+            cur.execute('PRAGMA foreign_keys = ON')
+            cur.execute(
+                f'INSERT INTO {self.table_name} ({names}) VALUES({p})',
+                    values
+            )
+            obj.pk = cur.lastrowid
         con.close()
         return obj.pk
 
