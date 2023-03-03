@@ -4,11 +4,13 @@
 
 from bookkeeper.models.category import Category
 from bookkeeper.models.expense import Expense
-from bookkeeper.repository.memory_repository import MemoryRepository
+from bookkeeper.repository.sqlite_repository import SqliteRepository
 from bookkeeper.utils import read_tree
 
-cat_repo = MemoryRepository[Category]()
-exp_repo = MemoryRepository[Expense]()
+cat_repo = SqliteRepository[Category]('databases/simple_sqlite_client.db',
+                                      cls=Category)
+exp_repo = SqliteRepository[Expense]('databases/simple_sqlite_client.db',
+                                     cls=Expense)
 
 cats = '''
 продукты
