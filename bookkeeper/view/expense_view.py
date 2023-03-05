@@ -20,7 +20,7 @@ class TableModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             value = self._data[index.row()][index.column()]
             if isinstance(value, datetime):
-                return value.strftime('%Y-%m-%d')
+                return value.strftime('%Y-%m-%d %H:%M:%S.%f')
             if isinstance(value, float):
                 return f'{value:.2f}'
             return value

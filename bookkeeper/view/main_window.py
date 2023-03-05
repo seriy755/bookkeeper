@@ -78,8 +78,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.category_dropdown.currentIndex()) 
     
     def set_category_dropdown(self, data):
+        self.category_dropdown.clear()
         for tup in data:
             self.category_dropdown.addItem(tup[1], tup[0])
+            
+    def on_expense_add_button_clicked(self, slot):
+        self.expense_add_button.clicked.connect(slot)
    
         
 DB_FILE = 'databases/simple_sqlite_client.db'
