@@ -20,7 +20,7 @@ class TableModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             value = self._data[index.row()][index.column()]
             if isinstance(value, datetime):
-                return value.strftime('%Y-%m-%d %H:%M:%S.%f')
+                return value.strftime('%Y-%m-%d')
             if isinstance(value, float):
                 return f'{value:.2f}'
             return value
@@ -38,7 +38,7 @@ class TableModel(QtCore.QAbstractTableModel):
 
 
 class ExpenseTableView(QTableView):
-    "Графическое представление бюджета"
+    "Графическое представление расходов"
     def __init__(self):
         super(ExpenseTableView, self).__init__()
         

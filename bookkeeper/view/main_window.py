@@ -14,6 +14,7 @@ from bookkeeper.models.expense import Expense
 from bookkeeper.repository.sqlite_repository import SqliteRepository
 from bookkeeper.view.expense_view import ExpenseTableView
 from bookkeeper.view.budget_view import BudgetTableView
+from bookkeeper.view.category_view import CategoryEditorWindow
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -50,6 +51,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.category_edit_button = QPushButton('Редактировать')
         self.bottom_controls.addWidget(self.category_edit_button, 1, 2)
+        
+        self.category_editor = CategoryEditorWindow
 
         self.expense_add_button = QPushButton('Добавить')
         self.bottom_controls.addWidget(self.expense_add_button, 2, 1)
@@ -84,6 +87,9 @@ class MainWindow(QtWidgets.QMainWindow):
             
     def on_expense_add_button_clicked(self, slot):
         self.expense_add_button.clicked.connect(slot)
+        
+    def on_category_edit_button_clicked(self, slot):
+        self.category_edit_button.clicked.connect(slot)
    
         
 DB_FILE = 'databases/simple_sqlite_client.db'
