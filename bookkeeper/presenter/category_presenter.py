@@ -22,6 +22,16 @@ class CategoryPresenter(AbstractPresenter):
         cat = Category(**kwargs)
         self.repo.add(cat)
         self._data = self.repo.get_all()
+    
+    def delete_data(self, cat):
+        for child in cat.get_subcategories(self.repo):
+            child.parent = cat.parent
+            self.repo.update(child)
+        self.repo.delete(cat.pk)
+        self._data = self.repo.get_all()
         
     def get_item(self, pk):
         return self.repo.get(pk)
+    
+    def get_item_all(self, where=None):
+        return self.repo.get_all(where)

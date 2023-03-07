@@ -3,11 +3,12 @@
 """
 
 import sys
+from datetime import datetime
+from typing import Any
+
 from PySide6.QtWidgets import (QVBoxLayout, QLabel, QWidget, QGridLayout, 
                                QComboBox, QLineEdit, QPushButton)
 from PySide6 import QtCore, QtWidgets
-
-from datetime import datetime
 
 from bookkeeper.models.category import Category
 from bookkeeper.models.expense import Expense
@@ -52,10 +53,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.category_edit_button = QPushButton('Редактировать')
         self.bottom_controls.addWidget(self.category_edit_button, 1, 2)
         
-        self.category_editor = CategoryEditorWindow
+        self.category_editor = CategoryEditorWindow()
 
         self.expense_add_button = QPushButton('Добавить')
         self.bottom_controls.addWidget(self.expense_add_button, 2, 1)
+        
+        self.expense_delete_button = QPushButton('Удалить выбранную запись')
+        self.bottom_controls.addWidget(self.expense_delete_button, 3, 1)
+        
+        self.expense_save_changes_button = QPushButton('Сохранить изменения')
+        self.bottom_controls.addWidget(self.expense_save_changes_button, 4, 1)
 
         self.bottom_widget = QWidget()
         self.bottom_widget.setLayout(self.bottom_controls)
@@ -67,11 +74,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.widget)
         
-    def set_expense_grid(self, data):
-        self.expense_grid.set_expense_table(data)
+    def set_expense_grid(self, data, ids) -> None:
+        self.expense_grid.set_expense_table(data, ids)     
         
-    def set_budget_grid(self, data):
+    def set_budget_grid(self, data) -> None:
         self.budget_grid.set_budget_table(data)
+        
+    def get_selected_expense(self) -> int:
+        return self.expense_grid.get_selected_expense()
+    
+    def get_all_expenses(self) -> list[list[Any]]:
+        return self.expense_grid.get_all_expenses()
+        
+    def get_all_restricts(self) -> list[list[Any]]:
+        return self.budget_grid.get_all_restricts()
     
     def get_amount(self) -> float:
         return float(self.amount_line_edit.text())
@@ -85,11 +101,23 @@ class MainWindow(QtWidgets.QMainWindow):
         for tup in data:
             self.category_dropdown.addItem(tup[1], tup[0])
             
+    def set_category_editor_window(self, data):
+        self.category_editor.update_data(data)
+        self.category_editor.setWindowTitle("Редактирование категорий")
+        self.category_editor.resize(480, 640)
+        self.category_editor.show()
+            
     def on_expense_add_button_clicked(self, slot):
         self.expense_add_button.clicked.connect(slot)
         
     def on_category_edit_button_clicked(self, slot):
         self.category_edit_button.clicked.connect(slot)
+        
+    def on_expense_delete_button_clicked(self, slot):
+        self.expense_delete_button.clicked.connect(slot)
+        
+    def on_expense_save_changes_button_clicked(self, slot):
+        self.expense_save_changes_button.clicked.connect(slot)
    
         
 DB_FILE = 'databases/simple_sqlite_client.db'

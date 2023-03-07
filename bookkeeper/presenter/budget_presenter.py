@@ -1,14 +1,21 @@
 from bookkeeper.models.budget import Budget
+from bookkeeper.presenter.abstract_presenter import AbstractPresenter
 
 
-class BudgetPresenter:
+class BudgetPresenter(AbstractPresenter):
     
     def __init__(self, repo):
         self.repo = repo
-        self._data = self.repo.get_all()
-        self.restricts = [(None, 1000), 
-                          (None, 7000), 
-                          (None, 30000)]
+        self._data = repo.get_all()
+        if not self._data:
+            b1 = Budget(0, 'день', None, 1000)
+            b2 = Budget(0, 'неделя', None, 7000)
+            b3 = Budget(0, 'месяц', None, 30000)
+            self.repo.add(b1)
+            self.repo.add(b2)
+            self.repo.add(b3)
+            self._data = repo.get_all()
+        
     
     def _to_list(self):
         data = []
@@ -17,18 +24,16 @@ class BudgetPresenter:
             data.append([amount, restrict])
         return data
     
-    def init_data(self, exp_repo):
-        for budg in Budget.create_from_list(self.restricts, 
-                                            exp_repo):
-            self.repo.add(budg)
-        self._data = self.repo.get_all()
-    
     def data(self):
         return self._to_list()
         
     def update_data(self, exp_repo):
         amounts = Budget.get_amounts(exp_repo)
-        for budg, amount in zip(self._data, amounts):
-            budg.amount = amount
-            self.repo.update(budg)
-        
+        for budget, amount in zip(self._data, amounts):
+            budget.amount = amount
+            self.repo.update(budget)
+            
+    def update_restricts(self, restricts):
+        for budget, restrict in zip(self._data, restricts):
+            budget.restrict = restrict
+            self.repo.update(budget)

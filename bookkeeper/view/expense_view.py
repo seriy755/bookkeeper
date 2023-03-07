@@ -2,50 +2,44 @@
 Модуль для описания таблицы расходов
 """
 
-from PySide6.QtWidgets import QTableView, QHeaderView
-from PySide6 import QtCore
-from PySide6.QtCore import Qt
-
 from datetime import datetime
+from typing import Union, Any
 
+from PySide6.QtWidgets import QTableView, QHeaderView
 
-class TableModel(QtCore.QAbstractTableModel):
-    "Модель таблицы"
-    def __init__(self, data, columns):
-        super(TableModel, self).__init__()
-        self._data = data
-        self._columns = columns
-
-    def data(self, index, role):
-        if role == QtCore.Qt.DisplayRole:
-            value = self._data[index.row()][index.column()]
-            if isinstance(value, datetime):
-                return value.strftime('%Y-%m-%d')
-            if isinstance(value, float):
-                return f'{value:.2f}'
-            return value
-        
-    def headerData(self, section: int, orientation: Qt.Orientation, 
-                   role: int = Qt.DisplayRole):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self._columns[section].title()
-
-    def rowCount(self, index):
-        return len(self._data)
-
-    def columnCount(self, index):
-        return len(self._data[0])
+from bookkeeper.view.table_model import TableModel
 
 
 class ExpenseTableView(QTableView):
     "Графическое представление расходов"
-    def __init__(self):
-        super(ExpenseTableView, self).__init__()
-        
-    def set_expense_table(self, data):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def set_expense_table(self,
+                         data: list[list[Any]],
+                         ids: list[int]) -> None:
+        "Установить модель таблицы расходов"
         columns = 'Дата Сумма Категория Комментарий'.split()
-        self.item_model = TableModel(data, columns)
+        edit_indexes = list(range(4))
+        self.item_model = TableModel(data, columns, None, edit_indexes)
         self.setModel(self.item_model)
+        self.setSelectionBehavior(QTableView.SelectRows)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.verticalHeader().hide()
-        
+        self.ids = ids
+    
+    def get_selected_expense(self) -> int:
+        "Получить номер выбанной записи"
+        try:
+            id = int(self.selectedIndexes()[0].row())
+            return self.ids[id]
+        except:
+            return 0
+    def get_all_expenses(self) -> list[list[Any]]:
+        data: list[list[Any]] = []
+        for row in range(self.item_model.rowCount()):
+            row_data: list[Any] = [self.ids[row]]
+            for column in range(self.item_model.columnCount()):
+                row_data.append(self.item_model.index(row, column).data())
+            data.append(row_data)
+        return data

@@ -10,14 +10,9 @@ class AbstractPresenter(ABC):
     Абстрактный presenter.
     Абстрактные методы:
     data
-    add_data
     """
-    
+
     @abstractmethod
     def data(self) -> list[type]:
+        "Получить данные из репозитория"
         pass
-    
-    @abstractmethod
-    def add_data(self, **kwargs) -> None:
-        pass
-    
