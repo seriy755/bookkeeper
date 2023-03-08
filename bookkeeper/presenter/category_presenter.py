@@ -30,6 +30,11 @@ class CategoryPresenter(AbstractPresenter):
         self.repo.delete(cat.pk)
         self._data = self.repo.get_all()
         
+    def update_data(self, **kwargs):
+        cat = Category(**kwargs)
+        self.repo.update(cat)
+        self._data = self.repo.get_all()
+        
     def get_item(self, pk):
         return self.repo.get(pk)
     

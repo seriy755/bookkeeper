@@ -30,6 +30,9 @@ class MainPresenter:
         self.view.category_editor.on_category_delete_button_clicked(
             self.handle_category_delete_button_clicked
         )
+        self.view.category_editor.on_category_save_changes_button_clicked(
+            self.handle_category_save_changes_button_clicked
+        )
         
     def _pk_to_cat(self, data):
         for exp in data['exp_data']:
@@ -55,6 +58,7 @@ class MainPresenter:
                                        exp_ids)
 
         self.view.set_category_dropdown(data['cat_data'])
+        self.view.category_editor.update_data(data['cat_data'])
             
         self.view.set_budget_grid(data['budget_data'])
     
@@ -111,3 +115,11 @@ class MainPresenter:
             
         self.budget_pres.update_data(self.exp_pres.repo)
         self.view.set_budget_grid(self.budget_pres.data())
+        
+    def handle_category_save_changes_button_clicked(self) -> None:
+        cat_data = self.view.category_editor.get_all_categories()
+        
+        for cat in cat_data:
+            self.cat_pres.update_data(pk=cat[0], name=cat[1], 
+                                      parent=cat[2])
+        self.update_data()

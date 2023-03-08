@@ -36,6 +36,7 @@ class ExpenseTableView(QTableView):
         except:
             return 0
     def get_all_expenses(self) -> list[list[Any]]:
+        "Получить все записи о расходах"
         data: list[list[Any]] = []
         for row in range(self.item_model.rowCount()):
             row_data: list[Any] = [self.ids[row]]

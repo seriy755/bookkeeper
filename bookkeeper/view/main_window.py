@@ -23,7 +23,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         
-        self.item_model = None
         self.setWindowTitle("The Bookkeeper App")
         self.resize(480, 640)
 
