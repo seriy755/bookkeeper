@@ -1,8 +1,6 @@
 """
 Модуль для описания таблицы расходов
 """
-
-from datetime import datetime
 from typing import Union, Any
 
 from PySide6.QtWidgets import QTableView, QHeaderView
@@ -14,30 +12,36 @@ class ExpenseTableView(QTableView):
     "Графическое представление расходов"
     def __init__(self) -> None:
         super().__init__()
+        self.item_model: Union[None, TableModel] = None
+        self.ids: list[int] = []
 
     def set_expense_table(self,
-                         data: list[list[Any]],
-                         ids: list[int]) -> None:
+                          data: list[list[Any]],
+                          ids: list[int]) -> None:
         "Установить модель таблицы расходов"
         columns = 'Дата Сумма Категория Комментарий'.split()
         edit_indexes = list(range(4))
-        self.item_model = TableModel(data, columns, None, edit_indexes)
+        self.item_model = TableModel(data[::-1], columns,
+                                     None, edit_indexes)
         self.setModel(self.item_model)
         self.setSelectionBehavior(QTableView.SelectRows)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.verticalHeader().hide()
-        self.ids = ids
-    
-    def get_selected_expense(self) -> int:
+        self.ids = ids[::-1]
+
+    def get_selected_expense(self) -> set[int] | None:
         "Получить номер выбанной записи"
         try:
-            id = int(self.selectedIndexes()[0].row())
-            return self.ids[id]
-        except:
-            return 0
+            indexes = self.selectedIndexes()
+            return set(self.ids[int(index.row())] for index in indexes)
+        except IndexError:
+            return None
+
     def get_all_expenses(self) -> list[list[Any]]:
         "Получить все записи о расходах"
         data: list[list[Any]] = []
+        if self.item_model is None:
+            return data
         for row in range(self.item_model.rowCount()):
             row_data: list[Any] = [self.ids[row]]
             for column in range(self.item_model.columnCount()):

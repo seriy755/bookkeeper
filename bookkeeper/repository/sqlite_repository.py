@@ -27,7 +27,7 @@ class SqliteRepository(AbstractRepository[T]):
         con.close()
 
     def _row_to_cls(self, pk: int, row: tuple[Any]) -> T:
-        """ Функция для конвертации строки БД в объект типа T """
+        "Функция для конвертации строки БД в объект типа T"
         attrs = {}
         for field, value in zip(self.fields, row):
             attrs[field] = value
@@ -99,7 +99,7 @@ class SqliteRepository(AbstractRepository[T]):
             raise KeyError('attempt to delete object with unknown primary key')
 
     def delete_all(self) -> None:
-        """ Функция для удаления всех записей из БД"""
+        " Функция для удаления всех записей из БД"
         with sl.connect(self.db_file) as con:
             cur = con.cursor()
             cur.execute(f"DELETE FROM {self.table_name}")

@@ -1,7 +1,6 @@
 """
-Модель таблицы
+Модуль для описания модели таблицы
 """
-from datetime import datetime
 from typing import Union, Any
 
 from PySide6.QtCore import (QAbstractTableModel, QModelIndex,
@@ -10,6 +9,7 @@ from PySide6.QtCore import (QAbstractTableModel, QModelIndex,
 
 class TableModel(QAbstractTableModel):
     "Модель таблицы"
+
     def __init__(self, data: list[list[Any]],
                  columns: list[str], rows: list[str] | None,
                  edit_indexes: list[int]):
@@ -18,14 +18,14 @@ class TableModel(QAbstractTableModel):
         self._columns = columns
         self.edit_indexes = edit_indexes
         if rows is None:
-            rowCount = self.rowCount()
-            self._rows = list(i for i in range(rowCount))
+            row_count = self.rowCount()
+            self._rows = list(str(i) for i in range(row_count))
         else:
             self._rows = rows
 
     def data(self, index: Union[QModelIndex, QPersistentModelIndex],
              role: int = Qt.EditRole | Qt.DisplayRole) -> Any:
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role in (Qt.DisplayRole, Qt.EditRole):
             value = self._data[index.row()][index.column()]
             if isinstance(value, float):
                 return f'{value:.2f}'
@@ -48,18 +48,18 @@ class TableModel(QAbstractTableModel):
                     parent: Union[QModelIndex, QPersistentModelIndex] = ...
                     ) -> int:
         return len(self._data[0]) if self._data else 0
-    
-    def flags(self, index):
+
+    def flags(self, index: Union[QModelIndex, QPersistentModelIndex]):
         if index.column() in self.edit_indexes:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
-        else:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable
-        
-    def setData(self, index, value, role=Qt.EditRole):
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
+    def setData(self, index: Union[QModelIndex, QPersistentModelIndex],
+                value: Any,
+                role: int = Qt.EditRole) -> bool:
         if role == Qt.EditRole:
             row = index.row()
             col = index.column()
             self._data[row][col] = value
             return True
         return False
-    
