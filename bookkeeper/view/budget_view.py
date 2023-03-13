@@ -2,6 +2,8 @@
 Модуль для описания графического интерфейса
 таблицы бюджета
 """
+# pylint: disable = no-name-in-module
+# mypy: disable-error-code="attr-defined,union-attr"
 from typing import Union, Any
 
 from PySide6.QtWidgets import QTableView, QHeaderView

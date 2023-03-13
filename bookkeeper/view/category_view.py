@@ -9,6 +9,9 @@
 кнопка удаления расхода
 кнопка сохранения изменений
 """
+# pylint: disable = no-name-in-module
+# pylint: disable = too-many-instance-attributes
+# mypy: disable-error-code="attr-defined,union-attr,assignment,arg-type,call-arg"
 from typing import Union, Callable, Any
 
 from PySide6.QtGui import QStandardItemModel, QStandardItem

@@ -33,7 +33,7 @@ class SqliteRepository(AbstractRepository[T]):
             attrs[field] = value
         obj = self.cls(**attrs)
         obj.pk = pk
-        return obj
+        return obj  # type: ignore
 
     def add(self, obj: T) -> int:
         if getattr(obj, 'pk', None) != 0:

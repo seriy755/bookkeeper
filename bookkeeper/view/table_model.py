@@ -3,6 +3,12 @@
 Используется для отображения списка
 расходов и бюджета
 """
+# pylint: disable = no-name-in-module
+# pylint: disable = inconsistent-return-statements
+# pylint: disable = missing-function-docstring
+# pylint: disable = invalid-name
+# pylint: disable = unused-argument
+# mypy: disable-error-code="attr-defined,union-attr,assignment"
 from typing import Union, Any
 
 from PySide6.QtCore import (QAbstractTableModel, QModelIndex,

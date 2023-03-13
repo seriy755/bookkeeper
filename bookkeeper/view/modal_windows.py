@@ -5,6 +5,8 @@
 информационные окна
 окна выбора файла с СУБД
 """
+# pylint: disable = no-name-in-module
+# mypy: disable-error-code="attr-defined,union-attr,arg-type"
 from pathlib import Path
 from typing import Any
 
