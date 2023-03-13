@@ -1,5 +1,6 @@
 """
-Модуль для описания таблицы расходов
+Модуль для описания графического интерфейса
+таблицы расходов
 """
 from typing import Union, Any
 
@@ -29,13 +30,10 @@ class ExpenseTableView(QTableView):
         self.verticalHeader().hide()
         self.ids = ids[::-1]
 
-    def get_selected_expense(self) -> set[int] | None:
+    def get_selected_expense(self) -> set[int]:
         "Получить номер выбанной записи"
-        try:
-            indexes = self.selectedIndexes()
-            return set(self.ids[int(index.row())] for index in indexes)
-        except IndexError:
-            return None
+        indexes = self.selectedIndexes()
+        return set(self.ids[int(index.row())] for index in indexes)
 
     def get_all_expenses(self) -> list[list[Any]]:
         "Получить все записи о расходах"

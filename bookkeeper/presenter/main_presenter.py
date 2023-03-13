@@ -1,5 +1,7 @@
 """
-Модуль для описания общего представителя
+Модуль для описания общего представителя.
+Реализует связь между GUI приложения и
+базой данных
 """
 from datetime import datetime
 
@@ -23,6 +25,7 @@ class MainPresenter:
                  cat_repo: AbstractRepository['Category'],
                  budget_repo: AbstractRepository['Budget']) -> None:
         self.view = view
+
         self.exp_pres = ExpensePresenter(exp_repo)
         self.cat_pres = CategoryPresenter(cat_repo)
         self.budget_pres = BudgetPresenter(budget_repo)
@@ -50,7 +53,7 @@ class MainPresenter:
             self.handle_category_save_changes_button_clicked
         )
 
-    def set_data(self) -> None:
+    def set_data(self, update: bool = False) -> None:
         "Вывести на экран данные из базы данных"
         self.view.set_category_dropdown(self.cat_pres.data())
 
@@ -63,7 +66,7 @@ class MainPresenter:
                                    self.exp_pres.get_all_pk())
 
         self.budget_pres.update_data(self.exp_pres.repo)
-        self.view.set_budget_grid(self.budget_pres.data())
+        self.view.set_budget_grid(self.budget_pres.data(), update)
 
     def show(self) -> None:
         "Вывести окно приложения"
@@ -71,6 +74,7 @@ class MainPresenter:
         self.set_data()
 
     def _check_amount(self, amount: str) -> bool:
+        "Проверить корректность введённой суммы"
         try:
             if float(amount) < 0:
                 error_message("Сумма затрат не может быть отрицательной!\n"
@@ -100,7 +104,7 @@ class MainPresenter:
 
         self.exp_pres.add_data(amount=amount, category=cat_pk)
 
-        self.set_data()
+        self.set_data(True)
 
     def handle_expense_delete_button_clicked(self) -> None:
         """
@@ -109,15 +113,15 @@ class MainPresenter:
         в базе данных
         """
         ids = self.view.get_selected_expense()
-        if ids is None:
+        if len(ids) == 0:
             return
 
-        deleted_exps: list['Expense'] = []
         for idx in ids:
-            deleted_exps.append(self.exp_pres.get(idx))
-        self.exp_pres.delete_data(deleted_exps)
+            exp = self.exp_pres.get(idx)
+            if exp is not None:
+                self.exp_pres.delete_data(exp)
 
-        self.set_data()
+        self.set_data(True)
 
     def handle_expense_save_changes_button_clicked(self) -> None:
         """
@@ -146,9 +150,10 @@ class MainPresenter:
 
             try:
                 cat = self.cat_pres.get_all(where={'name': exp[3]})[0]
-                self.exp_pres.update_data(
-                    pk=pk, expense_date=date,
-                    category=cat.pk, amount=amount, comment=comment)
+                up_exp = Expense(
+                    expense_date=date, amount=amount, category=cat.pk,
+                    comment=comment, pk=pk)
+                self.exp_pres.update_data(up_exp)
             except IndexError:
                 error_message(f"Неверное имя категории: {exp[3]}!\n"
                               "Пожалуйста, введите имя из списка категорий!")
@@ -156,7 +161,7 @@ class MainPresenter:
 
         self.budget_pres.update_data(self.exp_pres.repo)
 
-        self.set_data()
+        self.set_data(True)
 
     def handle_category_edit_button_clicked(self) -> None:
         """
@@ -196,10 +201,13 @@ class MainPresenter:
         в базе данных
         """
         name = self.view.category_editor.get_selected_category()
+        if name is None:
+            return
         cat = self.cat_pres.get_all(where={'name': name})[0]
 
         deleted_exps = self.exp_pres.get_all(where={'category': cat.pk})
-        self.exp_pres.delete_data(deleted_exps)
+        for exp in deleted_exps:
+            self.exp_pres.delete_data(exp)
 
         self.cat_pres.delete_data(cat)
         self.view.category_editor.update_data(self.cat_pres.data())
@@ -217,7 +225,8 @@ class MainPresenter:
             if not (cat[1] and cat[1].strip()):
                 error_message('Неподдерживаемое имя категории: пустая строка!')
                 continue
-            self.cat_pres.update_data(pk=cat[0], name=cat[1], parent=cat[2])
+            up_cat = Category(pk=cat[0], name=cat[1], parent=cat[2])
+            self.cat_pres.update_data(up_cat)
 
         self.view.category_editor.update_data(self.cat_pres.data())
         self.set_data()

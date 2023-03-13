@@ -1,5 +1,7 @@
 """
-Модуль для описания модели таблицы
+Модуль для описания модели таблицы.
+Используется для отображения списка
+расходов и бюджета
 """
 from typing import Union, Any
 
@@ -9,7 +11,6 @@ from PySide6.QtCore import (QAbstractTableModel, QModelIndex,
 
 class TableModel(QAbstractTableModel):
     "Модель таблицы"
-
     def __init__(self, data: list[list[Any]],
                  columns: list[str], rows: list[str] | None,
                  edit_indexes: list[int]):
@@ -49,7 +50,7 @@ class TableModel(QAbstractTableModel):
                     ) -> int:
         return len(self._data[0]) if self._data else 0
 
-    def flags(self, index: Union[QModelIndex, QPersistentModelIndex]):
+    def flags(self, index: Union[QModelIndex, QPersistentModelIndex]) -> Any:
         if index.column() in self.edit_indexes:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable

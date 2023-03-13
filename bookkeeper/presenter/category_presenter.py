@@ -37,10 +37,8 @@ class CategoryPresenter():
         self.repo.delete(cat.pk)
         self._data = self.repo.get_all()
 
-    def update_data(self, pk: int, name: str,
-                    parent: int | None) -> None:
+    def update_data(self, cat: Category) -> None:
         "Обновить данные в репозитории"
-        cat = Category(pk=pk, name=name, parent=parent)
         self.repo.update(cat)
         self._data = self.repo.get_all()
 
@@ -49,6 +47,6 @@ class CategoryPresenter():
         return self.repo.get(pk)
 
     def get_all(self,
-                where: dict[str, Any] | None = None) -> list[Category]:
+                where: dict[str, Any] | None = None) -> list['Category']:
         "Получить все записи из репозитория по некоторому условию"
         return self.repo.get_all(where)

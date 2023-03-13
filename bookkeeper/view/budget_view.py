@@ -1,11 +1,13 @@
 """
-Модуль для описания таблицы бюджета
+Модуль для описания графического интерфейса
+таблицы бюджета
 """
 from typing import Union, Any
 
-from PySide6.QtWidgets import QTableView, QHeaderView, QMessageBox
+from PySide6.QtWidgets import QTableView, QHeaderView
 
 from bookkeeper.view.table_model import TableModel
+from bookkeeper.view.modal_windows import message_send
 
 
 class BudgetTableView(QTableView):
@@ -15,7 +17,8 @@ class BudgetTableView(QTableView):
         self.item_model: Union[None, TableModel] = None
 
     def set_budget_table(self,
-                         data: list[list[Any]]) -> None:
+                         data: list[list[Any]],
+                         update: bool = False) -> None:
         "Установить модель таблицы бюджета"
         columns = 'Сумма Бюджет'.split()
         rows = 'День Неделя Месяц'.split()
@@ -24,7 +27,8 @@ class BudgetTableView(QTableView):
         self.setModel(self.item_model)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self._is_checked_amount(data)
+        if update is True:
+            self._is_checked_amount(data)
 
     def _is_checked_amount(self,
                            data: list[list[Any]]) -> None:
@@ -33,9 +37,7 @@ class BudgetTableView(QTableView):
             period = ('день' if row == 0 else 'неделю' if row == 1
                       else 'месяц')
             if value[0] > value[1]:
-                msg_box = QMessageBox()
-                msg_box.setText(f"Превышен лимит бюджета на {period}!")
-                msg_box.exec()
+                message_send(f"Превышен лимит бюджета на {period}!")
 
     def get_all_restricts(self) -> list[str]:
         "Получить все ограничения из таблицы"

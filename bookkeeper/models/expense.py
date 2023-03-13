@@ -17,7 +17,7 @@ class Expense:
     comment - комментарий
     pk - id записи в базе данных
     """
-    amount: int
+    amount: float
     category: int
     expense_date: str = datetime.now().strftime('%Y-%m-%d')
     added_date: str = datetime.now().strftime('%Y-%m-%d')

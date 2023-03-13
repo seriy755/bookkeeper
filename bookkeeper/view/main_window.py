@@ -1,5 +1,13 @@
 """
-Модуль для описания графического интерфейса главного окна приложения
+Модуль для описания графического интерфейса
+главного окна приложения. Вывод на экран
+таблиц расходов, бюджета, списка категорий
+элементов ввода и редактирования таблиц:
+поле ввода суммы расхода
+кнопка редактирования категорий
+кнопка добаления расхода
+кнопка удаления расхода
+кнопка сохранения изменений
 """
 from typing import Callable, Any
 
@@ -53,7 +61,7 @@ class MainWindow(QMainWindow):
         self.expense_add_button = QPushButton('Добавить')
         bottom_controls.addWidget(self.expense_add_button, 2, 1)
 
-        self.expense_delete_button = QPushButton('Удалить выбранную запись')
+        self.expense_delete_button = QPushButton('Удалить выбранные записи')
         bottom_controls.addWidget(self.expense_delete_button, 3, 1)
 
         self.expense_save_changes_button = QPushButton('Сохранить изменения')
@@ -76,9 +84,10 @@ class MainWindow(QMainWindow):
         self.expense_grid.set_expense_table(data, ids)
 
     def set_budget_grid(self,
-                        data: list[list[Any]]) -> None:
+                        data: list[list[Any]],
+                        update: bool = False) -> None:
         "Вывести на экран таблицу бюджета"
-        self.budget_grid.set_budget_table(data)
+        self.budget_grid.set_budget_table(data, update)
 
     def set_category_dropdown(self,
                               data: list[Any]) -> None:
@@ -87,7 +96,7 @@ class MainWindow(QMainWindow):
         for tup in data:
             self.category_dropdown.addItem(tup[1], tup[0])
 
-    def get_selected_expense(self) -> set[int] | None:
+    def get_selected_expense(self) -> set[int]:
         "Получить выделенную строку расхода"
         return self.expense_grid.get_selected_expense()
 

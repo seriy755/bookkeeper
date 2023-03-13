@@ -33,19 +33,13 @@ class ExpensePresenter():
         "Получить список всех pk из таблциы"
         return list(exp.pk for exp in self._data)
 
-    def delete_data(self,
-                    data: list['Expense']) -> None:
+    def delete_data(self, exp: Expense) -> None:
         "Удалить данные из репозитория"
-        for exp in data:
-            self.repo.delete(exp.pk)
+        self.repo.delete(exp.pk)
         self._data = self.repo.get_all()
 
-    def update_data(self, pk: int, expense_date: str, category: int,
-                    amount: float, comment: str) -> None:
+    def update_data(self, exp: Expense) -> None:
         "Обновить данные в репозитории"
-        exp = Expense(
-            pk=pk, expense_date=expense_date, category=category,
-            amount=amount, comment=comment)
         self.repo.update(exp)
         self._data = self.repo.get_all()
 
@@ -54,6 +48,6 @@ class ExpensePresenter():
         return self.repo.get(pk)
 
     def get_all(self,
-                where: dict[str, Any] | None = None) -> list[Expense]:
+                where: dict[str, Any] | None = None) -> list['Expense']:
         "Получить все записи из репозитория по некоторому условию"
         return self.repo.get_all(where)

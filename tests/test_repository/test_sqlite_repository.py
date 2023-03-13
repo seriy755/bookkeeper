@@ -79,4 +79,4 @@ def test_get_all_with_condition(repo, custom_class):
 
 def test_delete_all(repo):
     repo.delete_all()
-    assert repo.get(1) == None
+    assert repo.get(1) is None
